@@ -17,6 +17,7 @@ final class TrackerStore {
     private static int losses;
     private static boolean autoDetect = true;
     private static boolean chatPayButtonsEnabled = true;
+    private static boolean triplePayButtonEnabled = true;
     private static String lastLine = "";
     private static long lastLineAt = 0L;
     private static final ArrayDeque<String> history = new ArrayDeque<>();
@@ -34,6 +35,7 @@ final class TrackerStore {
             losses = Integer.parseInt(p.getProperty("losses", "0"));
             autoDetect = Boolean.parseBoolean(p.getProperty("autoDetect", "true"));
             chatPayButtonsEnabled = Boolean.parseBoolean(p.getProperty("chatPayButtonsEnabled", "true"));
+            triplePayButtonEnabled = Boolean.parseBoolean(p.getProperty("triplePayButtonEnabled", "true"));
             for (int i = 0; i < 8; i++) {
                 String item = p.getProperty("history." + i);
                 if (item != null && !item.isBlank()) history.addLast(item);
@@ -75,6 +77,8 @@ final class TrackerStore {
     static synchronized boolean isAutoDetectEnabled() { return autoDetect; }
     static synchronized boolean areChatPayButtonsEnabled() { return chatPayButtonsEnabled; }
     static synchronized void toggleChatPayButtons() { chatPayButtonsEnabled = !chatPayButtonsEnabled; save(); }
+    static synchronized boolean isTriplePayButtonEnabled() { return triplePayButtonEnabled; }
+    static synchronized void toggleTriplePayButton() { triplePayButtonEnabled = !triplePayButtonEnabled; save(); }
     static synchronized void toggleAutoDetect() { autoDetect = !autoDetect; save(); }
     static synchronized long getWon() { return won; }
     static synchronized long getLost() { return lost; }
@@ -104,6 +108,7 @@ final class TrackerStore {
             p.setProperty("losses", Integer.toString(losses));
             p.setProperty("autoDetect", Boolean.toString(autoDetect));
             p.setProperty("chatPayButtonsEnabled", Boolean.toString(chatPayButtonsEnabled));
+            p.setProperty("triplePayButtonEnabled", Boolean.toString(triplePayButtonEnabled));
             int i = 0;
             for (String item : history) p.setProperty("history." + i++, item);
             try (OutputStream out = Files.newOutputStream(FILE)) {
