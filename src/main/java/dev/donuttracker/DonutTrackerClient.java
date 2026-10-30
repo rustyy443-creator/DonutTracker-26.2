@@ -97,7 +97,11 @@ public final class DonutTrackerClient implements ClientModInitializer {
                             .withBold(true)
                             .withUnderlined(true)
                             .withClickEvent(new ClickEvent.RunCommand("/pay " + playerName + " " + tripleAmount)));
-            if (TrackerStore.areChatPayButtonsEnabled()) return message.copy().append(returnButton).append(doubleButton).append(tripleButton);
+            if (TrackerStore.areChatPayButtonsEnabled()) {
+                Component result = message.copy().append(returnButton).append(doubleButton);
+                if (TrackerStore.isTriplePayButtonEnabled()) result = result.append(tripleButton);
+                return result;
+            }
             return message;
         }
 
