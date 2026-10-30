@@ -171,6 +171,7 @@ public final class TrackerScreen extends Screen {
         drawToggle(g, x, ty + 38, w, "Animations", animationsEnabled, mx, my);
         drawToggle(g, x, ty + 76, w, "Compact Mode", compactMode, mx, my);
         drawToggle(g, x, ty + 114, w, "1X / 2X / 3X Chat Buttons", TrackerStore.areChatPayButtonsEnabled(), mx, my);
+        drawToggle(g, x, ty + 152, w, "3X Chat Button", TrackerStore.isTriplePayButtonEnabled(), mx, my);
     }
 
     private void drawStat(GuiGraphicsExtractor g, int x, int y, int w, String label, String value, String desc, int valueColor) {
@@ -324,6 +325,7 @@ public final class TrackerScreen extends Screen {
             if (inside(mouseX, mouseY, sx, ty + 38, sw, 24)) { animationsEnabled = !animationsEnabled; return true; }
             if (inside(mouseX, mouseY, sx, ty + 76, sw, 24)) { compactMode = !compactMode; return true; }
             if (inside(mouseX, mouseY, sx, ty + 114, sw, 24)) { TrackerStore.toggleChatPayButtons(); return true; }
+            if (inside(mouseX, mouseY, sx, ty + 152, sw, 24)) { TrackerStore.toggleTriplePayButton(); return true; }
             int gridY = top() + 24 + 82;
             int gap = 10, cw = (sw - gap * 2) / 3;
             for (int i = 0; i < THEMES.length; i++) {
