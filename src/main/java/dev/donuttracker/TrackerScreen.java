@@ -22,6 +22,8 @@ public final class TrackerScreen extends Screen {
     };
     private static int selectedStyle = 0;
     private boolean styleTab = false;
+    private boolean confirmReset = false;
+    private String resetStatus = "";
 
     public TrackerScreen() {
         super(Component.literal("Donut Tracker"));
@@ -52,8 +54,21 @@ public final class TrackerScreen extends Screen {
                 }).bounds(x, y, 108, 28).build());
             }
         } else {
+            addRenderableWidget(Button.builder(
+                    Component.literal(confirmReset ? "CONFIRM RESET?" : "RESET SESSION"),
+                    b -> {
+                        if (confirmReset) {
+                            TrackerStore.reset();
+                            resetStatus = "SESSION RESET TO $0";
+                            confirmReset = false;
+                        } else {
+                            confirmReset = true;
+                            resetStatus = "Click CONFIRM RESET? to clear this session";
+                        }
+                        init();
+                    }).bounds(c - 112, top + 294, 108, 22).build());
             addRenderableWidget(Button.builder(Component.literal("CLOSE"), b -> onClose())
-                    .bounds(c - 48, top + 294, 96, 22).build());
+                    .bounds(c + 4, top + 294, 108, 22).build());
         }
     }
 
@@ -114,6 +129,10 @@ public final class TrackerScreen extends Screen {
 
         String live = "●  AUTOMATIC CHAT DETECTION ACTIVE";
         graphics.text(font, live, c - font.width(live) / 2, top + 174, 0xFF6CFFC6, false);
+
+        if (!resetStatus.isEmpty()) {
+            graphics.text(font, resetStatus, c - font.width(resetStatus) / 2, top + 280, 0xFFFFD16A, false);
+        }
 
         String recent = "RECENT PAYMENTS";
         graphics.text(font, recent, c - font.width(recent) / 2, top + 198, accent, false);
