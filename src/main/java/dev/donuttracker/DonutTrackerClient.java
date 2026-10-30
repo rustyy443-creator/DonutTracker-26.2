@@ -56,7 +56,8 @@ public final class DonutTrackerClient implements ClientModInitializer {
             }
         });
 
-        // Tracker buttons use a local command so their payment is recorded immediately.\n        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
+        // Tracker buttons use a local command so their payment is recorded immediately.
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
                 dispatcher.register(literal("donuttracker_pay")
                         .then(argument("player", StringArgumentType.word())
                                 .then(argument("amount", StringArgumentType.word())
@@ -125,7 +126,11 @@ public final class DonutTrackerClient implements ClientModInitializer {
         handlePaymentMessageAfterDuplicateCheck(line);
     }
 
-    private static boolean clientPlayerUnavailable() {\n        return net.minecraft.client.Minecraft.getInstance().player == null;\n    }\n\n    private static void handlePaymentMessageAfterDuplicateCheck(String line) {
+    private static boolean clientPlayerUnavailable() {
+        return net.minecraft.client.Minecraft.getInstance().player == null;
+    }
+
+    private static void handlePaymentMessageAfterDuplicateCheck(String line) {
 
         Matcher incoming = INCOMING.matcher(line);
         if (incoming.find()) {
@@ -137,7 +142,14 @@ public final class DonutTrackerClient implements ClientModInitializer {
         Matcher outgoing = OUTGOING.matcher(line);
         if (outgoing.find()) {
             long cents = parseCents(outgoing.group(1));
-            if (cents > 0) TrackerStore.recordLoss(cents, "Sent: " + line);
+            if (cents > 0) {
+                if (cents == buttonPaymentCents && System.currentTimeMillis() - buttonPaymentAt < 10_000) {
+                    buttonPaymentCents = 0;
+                    buttonPaymentAt = 0;
+                } else {
+                    TrackerStore.recordLoss(cents, "Sent: " + line);
+                }
+            }
         }
     }
 
