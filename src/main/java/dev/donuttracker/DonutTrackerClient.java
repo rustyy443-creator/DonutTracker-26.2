@@ -5,6 +5,10 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -18,6 +22,8 @@ import java.util.regex.Pattern;
 
 public final class DonutTrackerClient implements ClientModInitializer {
     private static KeyMapping openTrackerKey;
+    private static long buttonPaymentCents;
+    private static long buttonPaymentAt;
     private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath("donuttracker", "main")
     );
@@ -50,7 +56,23 @@ public final class DonutTrackerClient implements ClientModInitializer {
             }
         });
 
-        // Always-on transaction tracking. Count only explicit payment notices.
+        // Tracker buttons use a local command so their payment is recorded immediately.\n        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
+                dispatcher.register(literal("donuttracker_pay")
+                        .then(argument("player", StringArgumentType.word())
+                                .then(argument("amount", StringArgumentType.word())
+                                        .executes(context -> {
+                                            String playerName = StringArgumentType.getString(context, "player");
+                                            String amountText = StringArgumentType.getString(context, "amount");
+                                            long cents = parseCents(amountText);
+                                            if (cents <= 0 || clientPlayerUnavailable()) return 0;
+                                            buttonPaymentCents = cents;
+                                            buttonPaymentAt = System.currentTimeMillis();
+                                            TrackerStore.recordLoss(cents, "Sent with tracker button to " + playerName);
+                                            net.minecraft.client.Minecraft.getInstance().player.connection.sendCommand(
+                                                    "pay " + playerName + " " + amountText);
+                                            return 1;
+                                        })))));
+\n        // Always-on transaction tracking. Count only explicit payment notices.
         ClientReceiveMessageEvents.MODIFY_GAME.register(DonutTrackerClient::modifyPaymentMessage);
         ClientReceiveMessageEvents.CHAT.register((message, signedMessage, sender, params, receptionTimestamp) ->
                 handlePaymentMessage(message.getString()));
@@ -80,13 +102,13 @@ public final class DonutTrackerClient implements ClientModInitializer {
                             .withColor(ChatFormatting.GREEN)
                             .withBold(true)
                             .withUnderlined(true)
-                            .withClickEvent(new ClickEvent.RunCommand("/pay " + playerName + " " + originalAmount)));
+                            .withClickEvent(new ClickEvent.RunCommand("/donuttracker_pay " + playerName + " " + originalAmount)));
             Component doubleButton = Component.literal(" [2X]")
                     .withStyle(style -> style
                             .withColor(ChatFormatting.LIGHT_PURPLE)
                             .withBold(true)
                             .withUnderlined(true)
-                            .withClickEvent(new ClickEvent.RunCommand("/pay " + playerName + " " + doubleAmount)));
+                            .withClickEvent(new ClickEvent.RunCommand("/donuttracker_pay " + playerName + " " + doubleAmount)));
             return message.copy().append(returnButton).append(doubleButton);
         }
 
@@ -103,7 +125,7 @@ public final class DonutTrackerClient implements ClientModInitializer {
         handlePaymentMessageAfterDuplicateCheck(line);
     }
 
-    private static void handlePaymentMessageAfterDuplicateCheck(String line) {
+    private static boolean clientPlayerUnavailable() {\n        return net.minecraft.client.Minecraft.getInstance().player == null;\n    }\n\n    private static void handlePaymentMessageAfterDuplicateCheck(String line) {
 
         Matcher incoming = INCOMING.matcher(line);
         if (incoming.find()) {
