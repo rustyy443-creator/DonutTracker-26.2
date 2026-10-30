@@ -59,7 +59,7 @@ public final class DonutTrackerClient implements ClientModInitializer {
     private static Component modifyPaymentMessage(Component message, boolean overlay) {
         String rawLine = message.getString();
         String line = rawLine.replaceAll("§[0-9A-FK-ORa-fk-or]", "")
-                .replace('\\u00a7', ' ')
+                .replace('\u00a7', ' ')
                 .replaceAll("\\s+", " ")
                 .trim();
         if (line.isEmpty() || overlay || TrackerStore.isDuplicate(line)) return message;
