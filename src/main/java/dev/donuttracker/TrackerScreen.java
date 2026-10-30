@@ -270,7 +270,22 @@ public final class TrackerScreen extends Screen {
     private void drawText(GuiGraphicsExtractor g, String text, int x, int y, int color, boolean shadow) {
         g.text(font, text, x, y, color, shadow);
     }
-    private String signedMoney(long cents) { return (cents < 0 ? "-$" : "+$") + TrackerStore.money(Math.abs(cents)); }
+    private String signedMoney(long cents) {
+        return (cents < 0 ? "-$" : "+$") + compactMoney(Math.abs(cents));
+    }
+
+    private String compactMoney(long cents) {
+        double amount = cents / 100.0;
+        if (amount >= 1_000_000_000) return shortNumber(amount / 1_000_000_000) + "B";
+        if (amount >= 1_000_000) return shortNumber(amount / 1_000_000) + "M";
+        if (amount >= 1_000) return shortNumber(amount / 1_000) + "K";
+        return String.format(java.util.Locale.US, "%.2f", amount);
+    }
+
+    private String shortNumber(double value) {
+        return String.format(java.util.Locale.US, value >= 100 ? "%.0f" : value >= 10 ? "%.1f" : "%.2f", value)
+                .replaceAll("\\.0+$", "").replaceAll("(\\\\.\\\\d)0$", "$1");
+    }
     private boolean inside(double mx, double my, int x, int y, int w, int h) {
         return mx >= x && mx <= x + w && my >= y && my <= y + h;
     }
