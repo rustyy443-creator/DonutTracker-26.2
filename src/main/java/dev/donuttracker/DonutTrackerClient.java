@@ -73,6 +73,9 @@ public final class DonutTrackerClient implements ClientModInitializer {
             String doubleAmount = java.math.BigDecimal.valueOf(cents)
                     .multiply(java.math.BigDecimal.valueOf(2))
                     .movePointLeft(2).stripTrailingZeros().toPlainString();
+            String tripleAmount = java.math.BigDecimal.valueOf(cents)
+                    .multiply(java.math.BigDecimal.valueOf(3))
+                    .movePointLeft(2).stripTrailingZeros().toPlainString();
             String originalAmount = java.math.BigDecimal.valueOf(cents)
                     .movePointLeft(2).stripTrailingZeros().toPlainString();
             Component returnButton = Component.literal(" [1X]")
@@ -87,7 +90,14 @@ public final class DonutTrackerClient implements ClientModInitializer {
                             .withBold(true)
                             .withUnderlined(true)
                             .withClickEvent(new ClickEvent.RunCommand("/pay " + playerName + " " + doubleAmount)));
-            if (TrackerStore.areChatPayButtonsEnabled()) return message.copy().append(returnButton).append(doubleButton);
+            // Keep 3X well away from the other choices to reduce accidental clicks.
+            Component tripleButton = Component.literal("                    [3X]")
+                    .withStyle(style -> style
+                            .withColor(ChatFormatting.GOLD)
+                            .withBold(true)
+                            .withUnderlined(true)
+                            .withClickEvent(new ClickEvent.RunCommand("/pay " + playerName + " " + tripleAmount)));
+            if (TrackerStore.areChatPayButtonsEnabled()) return message.copy().append(returnButton).append(doubleButton).append(tripleButton);
             return message;
         }
 
