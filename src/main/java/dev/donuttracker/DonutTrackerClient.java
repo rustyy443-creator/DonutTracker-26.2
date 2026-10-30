@@ -110,7 +110,8 @@ public final class DonutTrackerClient implements ClientModInitializer {
                             .withBold(true)
                             .withUnderlined(true)
                             .withClickEvent(new ClickEvent.RunCommand("/donuttracker_pay " + playerName + " " + doubleAmount)));
-            return message.copy().append(returnButton).append(doubleButton);
+            if (TrackerStore.areChatPayButtonsEnabled()) return message.copy().append(returnButton).append(doubleButton);
+            return message;
         }
 
         handlePaymentMessageAfterDuplicateCheck(line);
