@@ -73,7 +73,8 @@ public final class DonutTrackerClient implements ClientModInitializer {
                                                     "pay " + playerName + " " + amountText);
                                             return 1;
                                         })))));
-\n        // Always-on transaction tracking. Count only explicit payment notices.
+
+        // Always-on transaction tracking. Count only explicit payment notices.
         ClientReceiveMessageEvents.MODIFY_GAME.register(DonutTrackerClient::modifyPaymentMessage);
         ClientReceiveMessageEvents.CHAT.register((message, signedMessage, sender, params, receptionTimestamp) ->
                 handlePaymentMessage(message.getString()));
