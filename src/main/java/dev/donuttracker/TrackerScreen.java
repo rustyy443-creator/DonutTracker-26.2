@@ -2,6 +2,7 @@ package dev.donuttracker;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -275,8 +276,11 @@ public final class TrackerScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button != 0) return super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.buttonInfo().button();
+        if (button != 0) return super.mouseClicked(event, doubleClick);
         int x = left(), y = top(), w = boardW();
         int navX = x + 12, navY = y + 108;
         for (int i = 0; i < NAV.length; i++) {
@@ -310,7 +314,7 @@ public final class TrackerScreen extends Screen {
                 if (inside(mouseX, mouseY, tx, yy, cw, 38)) { selectedTheme = i; return true; }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     private void setOpacity(double mouseX, int x, int w) {
@@ -318,15 +322,18 @@ public final class TrackerScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (draggingOpacity && button == 0) { setOpacity(mouseX, mainX(), mainW()); return true; }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (draggingOpacity && event.buttonInfo().button() == 0) {
+            setOpacity(event.x(), mainX(), mainW());
+            return true;
+        }
+        return super.mouseDragged(event, dragX, dragY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0) draggingOpacity = false;
-        return super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.buttonInfo().button() == 0) draggingOpacity = false;
+        return super.mouseReleased(event);
     }
 
     @Override
