@@ -21,11 +21,11 @@ public final class DonutTrackerClient implements ClientModInitializer {
 
     // Expected DonutSMP style: "username paid you $100,000"
     private static final Pattern INCOMING = Pattern.compile(
-            "(?i)\\b(.+?)\\s+paid\\s+you\\s+\\$?([0-9][0-9,]*(?:\\.[0-9]{1,2})?\\s*[kmb]?)\\b"
+            "(?i)\\b(.+?)\\s+paid\\s+you\\s+\\$?\\s*([0-9][0-9,]*(?:\\.[0-9]{1,2})?\\s*[kmb]?)\\b"
     );
     // Also handle the common outgoing wording: "you paid username $100,000"
     private static final Pattern OUTGOING = Pattern.compile(
-            "(?i)\\byou\\s+paid\\s+(.+?)\\s+\\$?([0-9][0-9,]*(?:\\.[0-9]{1,2})?\\s*[kmb]?)\\b"
+            "(?i)\\byou\\s+paid\\s+(.+?)\\s+\\$?\\s*([0-9][0-9,]*(?:\\.[0-9]{1,2})?\\s*[kmb]?)\\b"
     );
 
     @Override
