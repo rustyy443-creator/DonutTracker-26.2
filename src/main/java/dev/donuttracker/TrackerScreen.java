@@ -5,7 +5,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +13,7 @@ public final class TrackerScreen extends Screen {
     private static final String[] THEMES = {"Neon Glass", "Midnight", "Purple Haze", "Crimson", "Ocean", "Gold"};
     private static final int[] ACCENTS = {0xFFFF79B8, 0xFFFF83B5, 0xFFC18BFF, 0xFFFF7888, 0xFF62BFFF, 0xFFFFD16A};
     private static final int[] PANELS = {0xE5101828, 0xE50D1421, 0xE51B122B, 0xE51F101B, 0xE5101D2B, 0xE51F1A10};
-    private static final Pattern AMOUNT = Pattern.compile("([+-])\\\\$([0-9,]+(?:\\\\.[0-9]{2})?)");
+    private static final Pattern AMOUNT = Pattern.compile("([+-])\\$([0-9,]+(?:\\.[0-9]{2})?)");
     private static int selectedTheme = 0;
     private static double opacity = 0.62;
     private static boolean blurEnabled = false;
