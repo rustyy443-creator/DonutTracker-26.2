@@ -73,13 +73,21 @@ public final class DonutTrackerClient implements ClientModInitializer {
             String doubleAmount = java.math.BigDecimal.valueOf(cents)
                     .multiply(java.math.BigDecimal.valueOf(2))
                     .movePointLeft(2).stripTrailingZeros().toPlainString();
-            Component button = Component.literal(" [2X]")
+            String originalAmount = java.math.BigDecimal.valueOf(cents)
+                    .movePointLeft(2).stripTrailingZeros().toPlainString();
+            Component returnButton = Component.literal(" [1X]")
+                    .withStyle(style -> style
+                            .withColor(ChatFormatting.GREEN)
+                            .withBold(true)
+                            .withUnderlined(true)
+                            .withClickEvent(new ClickEvent.RunCommand("/pay " + playerName + " " + originalAmount)));
+            Component doubleButton = Component.literal(" [2X]")
                     .withStyle(style -> style
                             .withColor(ChatFormatting.LIGHT_PURPLE)
                             .withBold(true)
                             .withUnderlined(true)
                             .withClickEvent(new ClickEvent.RunCommand("/pay " + playerName + " " + doubleAmount)));
-            return message.copy().append(button);
+            return message.copy().append(returnButton).append(doubleButton);
         }
 
         handlePaymentMessageAfterDuplicateCheck(line);
