@@ -1,6 +1,6 @@
 package dev.donuttracker;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -60,28 +60,29 @@ public final class TrackerScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        renderBackground(graphics, mouseX, mouseY, delta);
-        super.render(graphics, mouseX, mouseY, delta);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
 
         int c = this.width / 2;
-        graphics.drawCenteredString(font, Component.literal("DONUT TRACKER"), c, 24, 0xFFFFFF);
-        graphics.drawCenteredString(font, Component.literal("Your gambling stats — stored on this PC"), c, 42, 0xAAAAAA);
+        graphics.text(font, "DONUT TRACKER", c - font.width("DONUT TRACKER") / 2, 24, 0xFFFFFFFF, true);
+        graphics.text(font, "Your gambling stats — stored on this PC", c - font.width("Your gambling stats — stored on this PC") / 2, 42, 0xFFAAAAAA, true);
 
-        graphics.drawString(font, Component.literal("Total won:    $" + TrackerStore.money(TrackerStore.getWon())), c - 105, 62, 0x55FF55);
-        graphics.drawString(font, Component.literal("Total lost:   $" + TrackerStore.money(TrackerStore.getLost())), c + 8, 62, 0xFF7777);
+        graphics.text(font, "Total won:    $" + TrackerStore.money(TrackerStore.getWon()), c - 105, 62, 0xFF55FF55, true);
+        graphics.text(font, "Total lost:   $" + TrackerStore.money(TrackerStore.getLost()), c + 8, 62, 0xFFFF7777, true);
         long profit = TrackerStore.getProfit();
         int profitColor = profit >= 0 ? 0x55FF55 : 0xFF7777;
-        graphics.drawCenteredString(font, Component.literal("NET: " + (profit >= 0 ? "+$" : "-$") + TrackerStore.money(Math.abs(profit))), c, 78, profitColor);
+        String net = "NET: " + (profit >= 0 ? "+$" : "-$") + TrackerStore.money(Math.abs(profit));
+        graphics.text(font, net, c - font.width(net) / 2, 78, 0xFF000000 | profitColor, true);
 
-        graphics.drawCenteredString(font, Component.literal("Wins: " + TrackerStore.getWins() + "     Losses: " + TrackerStore.getLosses()), c, 210, 0xFFFFFF);
-        graphics.drawCenteredString(font, Component.literal(status), c, 230, 0xFFFF55);
+        String counts = "Wins: " + TrackerStore.getWins() + "     Losses: " + TrackerStore.getLosses();
+        graphics.text(font, counts, c - font.width(counts) / 2, 210, 0xFFFFFFFF, true);
+        graphics.text(font, status, c - font.width(status) / 2, 230, 0xFFFFFF55, true);
 
-        graphics.drawString(font, Component.literal("Recent activity"), c - 105, 252, 0xFFFFFF);
+        graphics.text(font, "Recent activity", c - 105, 252, 0xFFFFFFFF, true);
         int y = 267;
         for (String item : TrackerStore.getHistory()) {
             String shortItem = item.length() > 62 ? item.substring(0, 59) + "..." : item;
-            graphics.drawString(font, Component.literal(shortItem), c - 105, y, 0xBBBBBB);
+            graphics.text(font, shortItem, c - 105, y, 0xFFBBBBBB, true);
             y += 12;
             if (y > this.height - 12) break;
         }
@@ -89,6 +90,6 @@ public final class TrackerScreen extends Screen {
 
     @Override
     public void onClose() {
-        if (minecraft != null) minecraft.setScreen(null);
+        if (minecraft != null) minecraft.gui.setScreen(null);
     }
 }
