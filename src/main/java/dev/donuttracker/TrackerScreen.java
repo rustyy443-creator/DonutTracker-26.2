@@ -170,7 +170,7 @@ public final class TrackerScreen extends Screen {
         drawToggle(g, x, ty, w, "Background Blur", blurEnabled, mx, my);
         drawToggle(g, x, ty + 38, w, "Animations", animationsEnabled, mx, my);
         drawToggle(g, x, ty + 76, w, "Compact Mode", compactMode, mx, my);
-        drawToggle(g, x, ty + 114, w, "1X / 2X Chat Buttons", TrackerStore.areChatPayButtonsEnabled(), mx, my);
+        drawToggle(g, x, ty + 114, w, "1X / 2X / 3X Chat Buttons", TrackerStore.areChatPayButtonsEnabled(), mx, my);
     }
 
     private void drawStat(GuiGraphicsExtractor g, int x, int y, int w, String label, String value, String desc, int valueColor) {
