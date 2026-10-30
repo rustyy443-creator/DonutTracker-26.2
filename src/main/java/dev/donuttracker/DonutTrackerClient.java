@@ -3,9 +3,10 @@ package dev.donuttracker;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
@@ -15,6 +16,9 @@ import java.util.regex.Pattern;
 
 public final class DonutTrackerClient implements ClientModInitializer {
     private static KeyMapping openTrackerKey;
+    private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
+            Identifier.fromNamespaceAndPath("donuttracker", "main")
+    );
     private static final Pattern WIN = Pattern.compile(
             "(?i)\\b(?:you\\s+)?(?:won|win|winnings?)\\b[^0-9$]{0,24}\\$?([0-9][0-9,]*(?:\\.[0-9]{1,2})?)");
     private static final Pattern LOSS = Pattern.compile(
@@ -24,17 +28,17 @@ public final class DonutTrackerClient implements ClientModInitializer {
     public void onInitializeClient() {
         TrackerStore.load();
 
-        openTrackerKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+        openTrackerKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.donuttracker.open",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_RIGHT_SHIFT,
-                KeyMapping.Category.MISC
+                CATEGORY
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openTrackerKey.consumeClick()) {
                 if (client.player != null) {
-                    client.setScreen(new TrackerScreen());
+                    client.gui.setScreen(new TrackerScreen());
                 }
             }
         });
